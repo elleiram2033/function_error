@@ -1,0 +1,69 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract MyToken {
+    // Private variables
+    uint private ownerCode;
+    address private owner;
+
+    // Public variables
+    struct Token {
+        string name;
+        string abbrv;
+        uint totalSupply;
+    }
+    Token public coin;
+
+    // Mapping variables
+    mapping(address => uint256) private balances;
+    mapping(address => mapping(address => bool)) private isPresent;
+
+    // Constructor
+    constructor() {
+        ownerCode = 246;
+        owner = msg.sender;
+        coin.name = "MarielleFE";
+        coin.abbrv = "MrllFE";
+    }
+
+    // Modifier to check if the caller is the owner
+    modifier isOwner() {
+        require(msg.sender == owner, "You do not own this token.");
+        _;
+    }
+
+    // Function to get the owner code
+    function getCode() public view isOwner returns (uint) {
+        return ownerCode;
+    }
+
+    // Payable mint function
+    function mint(uint _val) external payable {
+        require(msg.value >= _val * 1 ether, "Insufficient ether sent.");
+        address _addr = msg.sender;
+        balances[_addr] += _val;
+        coin.totalSupply += _val;
+        isPresent[_addr][address(this)] = true;
+    }
+
+    // Burn function
+    function burn(uint _val) external {
+        address _addr = msg.sender;
+        assert(isPresent[_addr][address(this)]);
+        if (balances[_addr] < _val) {
+            revert("Error: Balance is less than amount to be burned.");
+        } else {
+            balances[_addr] -= _val;
+            coin.totalSupply -= _val;
+            if (balances[_addr] == 0) {
+                isPresent[_addr][address(this)] = false;
+                delete balances[_addr];
+            }
+        }
+    }
+
+    // Function to check balance of an address
+    function balanceOf(address _addr) external view returns (uint256) {
+        return balances[_addr];
+    }
+}
