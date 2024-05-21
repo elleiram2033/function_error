@@ -16,14 +16,15 @@ contract MyToken {
 
     // Mapping variables
     mapping(address => uint256) private balances;
-    mapping(address => mapping(address => bool)) private isPresent;
 
     // Constructor
     constructor() {
-        ownerCode = 246;
+        ownerCode = 500;
         owner = msg.sender;
         coin.name = "MarielleFE";
         coin.abbrv = "MrllFE";
+        coin.totalSupply = 1000; // Set initial total supply
+        balances[msg.sender] = coin.totalSupply; // Give all tokens to contract deployer
     }
 
     // Modifier to check if the caller is the owner
@@ -37,33 +38,16 @@ contract MyToken {
         return ownerCode;
     }
 
-    // Payable mint function
-    function mint(uint _val) external payable {
-        require(msg.value >= _val * 1 ether, "Insufficient ether sent.");
-        address _addr = msg.sender;
-        balances[_addr] += _val;
-        coin.totalSupply += _val;
-        isPresent[_addr][address(this)] = true;
+    // Function to add value to the owner code
+    function addToOwnerCode(uint _value) public isOwner {
+        ownerCode += _value;
     }
 
     // Burn function
     function burn(uint _val) external {
-        address _addr = msg.sender;
-        assert(isPresent[_addr][address(this)]);
-        if (balances[_addr] < _val) {
-            revert("Error: Balance is less than amount to be burned.");
-        } else {
-            balances[_addr] -= _val;
-            coin.totalSupply -= _val;
-            if (balances[_addr] == 0) {
-                isPresent[_addr][address(this)] = false;
-                delete balances[_addr];
-            }
-        }
-    }
-
-    // Function to check balance of an address
-    function balanceOf(address _addr) external view returns (uint256) {
-        return balances[_addr];
+        require(balances[msg.sender] >= _val, "Insufficient balance to burn.");
+        balances[msg.sender] -= _val; // Deduct burned tokens from sender's balance
+        coin.totalSupply -= _val; // Reduce total supply
+        ownerCode -= _val; // Subtract burned tokens from ownerCode
     }
 }
