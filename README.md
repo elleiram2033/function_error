@@ -49,6 +49,8 @@ This contract was developed and tested using Remix IDE (remix.ethereum.org).
 
 Marielle Romana
 
+NTC EMAIL: 421000169@ntc.edu.ph
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for more details.
