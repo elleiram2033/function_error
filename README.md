@@ -1,4 +1,4 @@
-# MyToken Smart Contract
+# Module 1 Function Error
 
 This Solidity smart contract, named MyToken, implements a basic ERC20-like token with additional functionalities such as owner-specific operations and token burning.
 
